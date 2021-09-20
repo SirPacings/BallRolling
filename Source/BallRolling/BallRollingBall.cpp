@@ -25,21 +25,6 @@ ABallRollingBall::ABallRollingBall()
 	Ball->SetNotifyRigidBodyCollision(true);
 	RootComponent = Ball;
 
-	// Create a camera boom attached to the root (ball)
-	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm0"));
-	SpringArm->SetupAttachment(RootComponent);
-	SpringArm->bDoCollisionTest = false;
-	SpringArm->SetUsingAbsoluteRotation(true); // Rotation of the ball should not affect rotation of boom
-	SpringArm->SetRelativeRotation(FRotator(-45.f, 0.f, 0.f));
-	SpringArm->TargetArmLength = 1200.f;
-	SpringArm->bEnableCameraLag = false;
-	SpringArm->CameraLagSpeed = 3.f;
-
-	// Create a camera and attach to boom
-	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera0"));
-	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
-	Camera->bUsePawnControlRotation = false; // We don't want the controller rotating the camera
-
 	// Set up forces
 	RollTorque = 50000000.0f;
 	JumpImpulse = 350000.0f;
