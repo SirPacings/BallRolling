@@ -39,21 +39,32 @@ void AControllerPawn::Tick(float DeltaTime)
 	FVector Ball1Location = Ball1->GetActorLocation();
 	FVector Ball2Location = Ball2->GetActorLocation();
 	FVector Midpoint = (Ball1Location +Ball2Location)/2;
-	FVector CrossProduct = FVector::CrossProduct(Ball1Location, Ball2Location);
-	float dotQ = Dot3(Ball1Location, Ball2Location); // (Ball1Location.X * Ball2Location.X) + (Ball1Location.Y * Ball2Location.Y) + (Ball1Location.Z * Ball2Location.Z);
+	float dot = Dot3(Ball1Location, Ball2Location); // (Ball1Location.X * Ball2Location.X) + (Ball1Location.Y * Ball2Location.Y) + (Ball1Location.Z * Ball2Location.Z);
 	float Ball1ZDst = Ball1Location.Size(); // sqrt(pow(Ball1Location.X, 2) + pow(Ball1Location.Y, 2) + pow(Ball1Location.Z, 2));
 	float Ball2ZDst = Ball2Location.Size(); // sqrt(pow(Ball2Location.X, 2) + pow(Ball2Location.Y, 2) + pow(Ball2Location.Z, 2));
+
+	FVector NormalBall1 = Ball1Location / Ball1ZDst;
+	FVector NormalBall2 = Ball2Location / Ball2ZDst;
+
+	FVector CrossProduct = FVector::CrossProduct(NormalBall1, NormalBall2);
+
 	float DistBetween = sqrt(pow(Ball1Location.X-Ball2Location.X, 2) + pow(Ball1Location.Y - Ball2Location.Y, 2) + pow(Ball1Location.Z - Ball2Location.Z, 2));
 	Camera->SetWorldLocation(Midpoint+(200,0,500));
 	Camera->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(Midpoint + (200, 0, 500),Midpoint));
 
-	GEngine->AddOnScreenDebugMessage(0, 2, FColor::Green, "DotProduct:" + FString::SanitizeFloat(dotQ/ Ball1ZDst * Ball2ZDst));
+	GEngine->AddOnScreenDebugMessage(0, 2, FColor::Green, "DotProduct:" + FString::SanitizeFloat(dot/ Ball1ZDst * Ball2ZDst));
 
-	DrawDebugLine(GetWorld(), Midpoint, CrossProduct,FColor(255, 0, 0),false, -1, 0, 12.333);
+	DrawDebugLine(GetWorld(), Midpoint, Midpoint + 50*CrossProduct,FColor::Blue,false, -1, 0, 12.333);
+
+	//Between length + Line
 	DrawDebugLine(GetWorld(), Ball1Location, Ball2Location, FColor(255, 0, 0), false, -1, 0, 12.333);
 	DrawDebugString(GetWorld(), (Ball1Location + Ball2Location) / 2, FString::SanitizeFloat(DistBetween),NULL,FColor::White, DeltaTime, false, 1);
+
+	//Ball1 length + Line
 	DrawDebugLine(GetWorld(), Ball1Location, FVector(0,0,0), FColor(255, 0, 0), false, -1, 0, 12.333);
 	DrawDebugString(GetWorld(), Ball1Location / 2, FString::SanitizeFloat(Ball1Location.Size()), NULL, FColor::White, DeltaTime, false, 1);
+
+	//Ball2 length + Line
 	DrawDebugLine(GetWorld(), Ball2Location, FVector(0, 0, 0), FColor(255, 0, 0), false, -1, 0, 12.333);
 	DrawDebugString(GetWorld(), Ball2Location / 2, FString::SanitizeFloat(Ball2Location.Size()), NULL, FColor::White, DeltaTime, false, 1);
 }
